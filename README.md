@@ -44,7 +44,84 @@ Shortcut: the website's **Demo guide** page (footer → Demo guide, or `index.ht
 
 ---
 
-## 2. Run or host it
+## 2. What's built in the prototype
+
+Everything below exists and can be clicked. Website links use the language prefix (`#/en/`, `#/pt/`, `#/fr/`): replace `en` with `pt` or `fr` to open the same page in another language.
+
+### 2.1 Website pages (`index.html`)
+
+| # | Page | Link | What it contains |
+|---|---|---|---|
+| 1 | **Home** | `#/en/` | Hero banner with Mozambique FLNG illustration, search box, key figures, latest opportunities, Mozambique gas projects (Coral Sul FLNG, Mozambique LNG, Rovuma LNG, Pande & Temane), featured intelligence, audience cards, featured suppliers, news & upcoming webinars, membership + newsletter banner. Fully editable from the backend. |
+| 2 | About OilSkill | `#/en/about` | Mission, industry focus, platform purpose, who we serve |
+| 3 | Industry Intelligence (list) | `#/en/intel` | Search, filters (category, sector, date, free/premium), sorting, pagination |
+| 4 | Intelligence detail | `#/en/intel/i1` | Report summary, key points, download button, source box (imported items), **premium lock** for non-members, related content |
+| 5 | Business Opportunities (list) | `#/en/opps` | Search, filters (type, sector, location, status, date), sort by closing date, Open / Closing soon / Closed badges, days left |
+| 6 | Opportunity detail | `#/en/opps/o1` | Description, organisation, dates, documents & how to apply (premium-locked on premium items) |
+| 7 | Supplier Directory (list) | `#/en/suppliers` | Search, filters (service type, sector, location) |
+| 8 | Supplier profile | `#/en/suppliers/sp1` | Overview, services, certifications, company facts; **contact details for members only** |
+| 9 | News (list + detail) | `#/en/news`, `#/en/news/n1` | Category/date filters, article page, source attribution on imported news |
+| 10 | Webinars (list + detail) | `#/en/webinars`, `#/en/webinars/w1` | Upcoming/Past tabs, speakers, date & time in Mozambique time, **registration form** or external Zoom/Teams link, recordings, members-only webinars |
+| 11 | **Membership plans** | `#/en/membership` | Free / Professional (monthly or annual toggle) / Corporate plans, current-plan marker, FAQ |
+| 12 | **Registration** | `#/en/register` | Full form with validation, password strength meter, terms consent, preferred language, plan choice |
+| 13 | **Login** | `#/en/login` | Email + password, remember me, error message, redirect back to the page you came from |
+| 14 | **Forgot / Reset password** | `#/en/forgot` → `#/en/reset` | Request link, open reset link (shown on screen in the demo), set new password |
+| 15 | **Checkout** | `#/en/checkout/pro_monthly` | Order summary, recurring billing note, terms checkbox |
+| 16 | **Payment gateway (simulated)** | opens from checkout | Sandbox payment page: *approved* card, *declined* card, or *cancel and return* |
+| 17 | **Payment result** | after the gateway | Success (membership active) / Failed (nothing charged, retry) / Cancelled |
+| 18 | **Member dashboard** | `#/en/account` | Plan, status, renewal/expiry date, notices (failed / cancelled / expired), premium content, my webinars, quick links |
+| 19 | My profile | `#/en/account/profile` | Edit details, preferred language (emails follow it), change password |
+| 20 | My subscription & billing | `#/en/account/billing` | Current plan, gateway token, payment history, **cancel subscription** (confirmation pop-up), change plan |
+| 21 | Search results | `#/en/search?q=lng` | Site-wide search with content-type tabs and sector filter |
+| 22 | Contact | `#/en/contact` | Contact form with validation and consent |
+| 23 | Privacy Policy / Terms | `#/en/privacy`, `#/en/terms` | Draft placeholder pages (legal text to come from OilSkill) |
+| 24 | Image credits | `#/en/credits` | Image register: subject, actual location, source, credit |
+| 25 | **Demo guide** | `#/en/guide` | Test accounts with one-click login, walkthrough, working-vs-simulated table, reset button |
+| 26 | Page not found | any wrong link | Translated 404 page |
+
+On every page: header with **EN / PT / FR switcher**, mobile menu, footer (also with a language switcher), demo ribbon, cookie banner (accept / essential only), and a "this page is also available in…" banner when the browser language is Portuguese or French.
+
+### 2.2 User flows (step by step)
+
+| Flow | Steps |
+|---|---|
+| **A. Browse & search** | Home → search box or menu → list page → combine filters → open detail → related items |
+| **B. Free registration** | Join OilSkill → fill form (errors shown in the selected language if wrong) → account created → welcome email (Mail Log) → Member dashboard |
+| **C. Paid membership + payment** | Membership → Choose plan → Register (or Checkout if already logged in) → Order summary → tick terms → *Proceed to secure payment* → simulated gateway → **Approved**: success page, membership active, receipt email, premium unlocked · **Declined**: failed page, nothing activated, retry · **Cancel**: cancelled page |
+| **D. Login** | Log in → wrong password shows an error → correct login → back to the page you were on (e.g. a locked report) |
+| **E. Forgot password** | Forgot your password? → email → reset link appears (as it would in the email) → new password → log in |
+| **F. Premium access** | Open a ★ Premium report as visitor (locked) → as free member (upgrade prompt) → as Professional (unlocked) → as expired member (renew prompt) |
+| **G. Cancel subscription** | My subscription & billing → Cancel → confirm → status "Cancelled (access until …)" → access kept until that date → cancellation email |
+| **H. Renewal / failed renewal / expiry** | Backend → MemberPress → Subscriptions → *Simulate renewal* / *Renewal fails* / *Cancel* → *Run expiry now* → log in as that member on the website to see the change |
+| **I. Webinar registration** | Webinars → upcoming webinar → Register (name/email prefilled when logged in) → confirmation + email → appears in My webinars and in Backend → Registrations (CSV export). Members-only webinars ask non-members to log in or upgrade |
+| **J. Contact** | Contact → form → thank-you message → Backend → Enquiries and Mail Log |
+| **K. Supplier contact** | Supplier profile → contact details hidden for visitors/free members → shown for Professional/Corporate |
+| **L. Change language** | Any page → EN / PT / FR → same page translated (menus, content, forms, errors, dates, currency); profile language controls email language |
+| **M. Data sync (backend)** | Data Sync → Run now → live log → Review Queue → approve / edit / reject / approve + translate → item on website with Imported badge and source link → run again: duplicates skipped → test feed v2: update detected → broken: error logged + admin email |
+| **N. Homepage editing (backend)** | Pages → Home → edit text per language, image, project cards, section order/visibility → Update → homepage and preview change |
+| **O. Content editing (backend)** | Opportunities / Intelligence / Suppliers / News / Webinars → edit or Add New → Update → visible on the website (Draft hides it, Premium locks it, Trash removes it) |
+
+### 2.3 Backend screens (`admin.html`)
+
+| Menu | Screens |
+|---|---|
+| Login | WordPress-style login page |
+| Dashboard | At a glance, memberships, data sync status, recent transactions, upcoming webinars, enquiries, language progress |
+| Posts (News), Intelligence, Opportunities, Suppliers, Webinars | List (filters, search, status tabs, language column, Trash) + editor (language tabs, fields, Publish box, WPML box) |
+| Webinars → Registrations | List, filter, CSV export |
+| Media | Image register |
+| Pages | Page list; **Home** opens the homepage editor |
+| Enquiries | Contact form entries |
+| Data Sync | Sources (run now, cron, test feed versions), source detail (config, selectors, mapping, raw data), Review Queue, Logs |
+| MemberPress | Members, Memberships (plans + access rules), Subscriptions (lifecycle actions), Transactions (refund), Settings › Payments |
+| WPML | Languages, Translation Management, String Translation (editable PT/FR) |
+| Users | Backend users + role permissions |
+| Mail Log | All emails, previewed in the recipient's language |
+| Settings | Reset demo data, production plugin list |
+
+---
+
+## 3. Run or host it
 
 **Local (for practice):**
 
@@ -60,7 +137,7 @@ After uploading a new version, press **Ctrl + F5** once in your browser so it lo
 
 ---
 
-## 3. ⚠️ Read before presenting (avoid mistakes)
+## 4. ⚠️ Read before presenting (avoid mistakes)
 
 1. **Use one browser for everything.** Data is stored in the browser you use. Edits made in Chrome won't appear in Edge, on another computer, or on the client's machine. Present the backend and the website in **two tabs of the same browser**.
 2. **Start from a clean state.** Just before the meeting, open the backend → **Settings → Reset demo data** (or website → Demo guide → Reset demo data). This restores all sample content, accounts, the homepage and translations.
@@ -71,20 +148,20 @@ After uploading a new version, press **Ctrl + F5** once in your browser so it lo
 7. **Data sync, second run:** running the same source twice shows *duplicates skipped*. That's the intended demonstration. To show fresh imports again, reset demo data.
 8. **Use the right words:**
    - The payment page is a **simulated sandbox gateway**, not a live payment.
-   - Pictures are **illustrated placeholders** until licensed photos are added (see section 8).
+   - Pictures are **illustrated placeholders** until licensed photos are added (see section 9).
    - Organisations in opportunities and suppliers are **fictional sample data**.
    - Portuguese and French texts are **machine-assisted and pending professional review**.
    - Everything simulated is labelled on screen (SAMPLE, SIMULATED, ILLUSTRATIVE). Say so; don't claim it's live.
 9. **Passwords for new registrations** need at least 8 characters, a number and a capital letter (e.g. `Demo@2026`). Registering an email that already exists shows an error on purpose.
-10. **Don't change Users, Payments, Media or Memberships during the demo.** Those screens are view-only (section 5).
+10. **Don't change Users, Payments, Media or Memberships during the demo.** Those screens are view-only (section 6).
 
 ---
 
-## 4. What you CAN edit in the backend and where it shows on the website
+## 5. What you CAN edit in the backend and where it shows on the website
 
 Log in to `admin.html` as Administrator. Every item below has been tested: change it, click **Update/Save**, then refresh the website tab.
 
-### 4.1 Pages → **Home** (homepage editor) ✅ fully editable
+### 5.1 Pages → **Home** (homepage editor) ✅ fully editable
 
 Open: **Pages → Home**, or **✎ Edit Home** in the top bar, or the blue **✎ Edit this page** button on the homepage (visible while you're logged in to the backend).
 
@@ -107,7 +184,7 @@ Open: **Pages → Home**, or **✎ Edit Home** in the top bar, or the blue **✎
 
 **Restore default content** (Publish box) resets only the homepage.
 
-### 4.2 Content lists ✅ editable
+### 5.2 Content lists ✅ editable
 
 | Backend menu | What you can do | Where it shows on the website |
 |---|---|---|
@@ -124,7 +201,7 @@ How to use the content editor:
 - **View on site ↗** (Publish box) opens the item on the website in the language you're editing.
 - The list's **Languages** column shows which translations exist: green = translated, yellow = machine-translated, dashed = missing (click to add).
 
-### 4.3 Data Sync ✅ interactive (main demo feature, 20 points)
+### 5.3 Data Sync ✅ interactive (main demo feature, 20 points)
 
 | Screen | What you can do | Where it shows |
 |---|---|---|
@@ -135,7 +212,7 @@ How to use the content editor:
 
 Recommended demo order: Run Source A → Review Queue → Approve + translate → show it on the website in PT → Run Source A again (duplicates skipped) → Source C: run `v1`, approve, switch to `v2`, run (update detected, old vs new shown) → switch to `broken`, run (error logged, admin email in Mail Log).
 
-### 4.4 MemberPress ✅ interactive actions
+### 5.4 MemberPress ✅ interactive actions
 
 | Screen | What you can do | Where it shows on the website (log in as that member) |
 |---|---|---|
@@ -145,16 +222,16 @@ Recommended demo order: Run Source A → Review Queue → Approve + translate �
 | Memberships | View only (plans, prices, access rules) | — |
 | Settings › Payments | View only (illustrative gateway settings) | — |
 
-### 4.5 WPML ✅ String Translation editable
+### 5.5 WPML ✅ String Translation editable
 
 | Screen | What you can do | Where it shows |
 |---|---|---|
 | **WPML → String Translation** | Search any interface text (menu labels, buttons, form labels, **error messages**, emails) and edit the **Portuguese** and **French** versions → **Save** | Everywhere that text appears on the site in PT/FR (e.g. change `nav.news` PT to "Novidades" and the PT menu changes) |
 | Languages, Translation Management | View only (settings, translation progress) | — |
 
-Note: String Translation edits **Portuguese and French only**; the English column is the fixed original. To change homepage English text, use **Pages → Home** (4.1).
+Note: String Translation edits **Portuguese and French only**; the English column is the fixed original. To change homepage English text, use **Pages → Home** (5.1).
 
-### 4.6 Other screens
+### 5.6 Other screens
 
 | Screen | Type | Notes |
 |---|---|---|
@@ -166,7 +243,7 @@ Note: String Translation edits **Portuguese and French only**; the English colum
 
 ---
 
-## 5. What you CANNOT edit in the demo backend
+## 6. What you CANNOT edit in the demo backend
 
 Don't try to change these during the presentation. If the client asks, explain they're fully editable in the real WordPress build.
 
@@ -176,7 +253,7 @@ Don't try to change these during the presentation. If the client asks, explain t
 | Header menu and footer links, footer text, contact details | Fixed in the prototype. WordPress Menus/Widgets in production. |
 | Membership plan names, prices, features | View only. Configured in MemberPress in production. |
 | Payment gateway settings | View only. Needs OilSkill's approved merchant account. |
-| Media Library: uploading images | View only (image register). Add photos by putting files in `prototype/assets/img/photos/` (section 8). |
+| Media Library: uploading images | View only (image register). Add photos by putting files in `prototype/assets/img/photos/` (section 9). |
 | Users: adding/removing backend users | View only. New *website members* can register on the website. |
 | Rich article body (Gutenberg), PDF attachments, speaker lists | Only title, summary and listed fields are editable. Full block editor in production. |
 | English interface strings (buttons, labels, messages) | Only PT/FR are editable in String Translation. |
@@ -184,7 +261,7 @@ Don't try to change these during the presentation. If the client asks, explain t
 
 ---
 
-## 6. Things to do on the website during the demo
+## 7. Things to do on the website during the demo
 
 | Show | How |
 |---|---|
@@ -199,7 +276,7 @@ Don't try to change these during the presentation. If the client asks, explain t
 
 ---
 
-## 7. Working vs simulated (say this honestly)
+## 8. Working vs simulated (say this honestly)
 
 | Area | Status |
 |---|---|
@@ -219,7 +296,7 @@ Don't try to change these during the presentation. If the client asks, explain t
 
 ---
 
-## 8. Adding real Mozambican photos (needed for evaluation criterion 2)
+## 9. Adding real Mozambican photos (needed for evaluation criterion 2)
 
 Put licensed photos in `prototype/assets/img/photos/` with these exact file names. They replace the illustrations automatically.
 
@@ -236,7 +313,7 @@ About 1600×900 px, under 250 KB each. Then update the `credit` and `status` lin
 
 ---
 
-## 9. Repository contents
+## 10. Repository contents
 
 ```
 README.md                    this guide

@@ -9,4 +9,4 @@ Put licensed photos here with these exact names (they replace the illustrations 
 - port-of-pemba.jpg
 - oilskill-professionals.jpg
 
-See section 8 of the main README for subjects, sources and sizes.
+See section 9 of the main README for subjects, sources and sizes.
