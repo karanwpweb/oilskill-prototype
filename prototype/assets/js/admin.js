@@ -50,10 +50,21 @@
   }
   function bar() {
     var u = me();
-    return '<div id="adminbar"><a class="wp" href="#/dashboard" title="WordPress">W</a><a href="index.html" target="_blank">🏠 OilSkill</a><a href="#/sync/queue">⟳ ' + Store.get('queue', []).filter(function (x) { return x.status === 'pending'; }).length + '</a><a href="#/new/news">＋ New</a><a href="#/pages/home">✎ Edit Home</a><span class="demo">PROTOTYPE · SIMULATED WP ADMIN</span>' +
-      '<div class="right"><a href="index.html#/en/guide" target="_blank">Demo guide</a><a href="#" data-a="logout">Howdy, ' + esc(u.first) + ' (' + u.role + ') · Log out</a></div></div>';
+    return '<div id="adminbar"><a href="#" class="burger" data-a="menu-toggle" aria-label="Menu" aria-expanded="false">☰</a><a class="wp" href="#/dashboard" title="WordPress">W</a><a href="index.html" target="_blank" title="View site">🏠<span class="t"> OilSkill</span></a><a href="#/sync/queue" title="Review queue">⟳ ' + Store.get('queue', []).filter(function (x) { return x.status === 'pending'; }).length + '</a><a href="#/new/news" title="New"><span>＋</span><span class="t"> New</span></a><a href="#/pages/home" title="Edit Home">✎<span class="t"> Edit Home</span></a><span class="demo"><span class="t">PROTOTYPE · SIMULATED WP ADMIN</span><span class="m">DEMO</span></span>' +
+      '<div class="right"><a href="index.html#/en/guide" target="_blank" title="Demo guide"><span class="t">Demo guide</span><span class="m">?</span></a><a href="#" data-a="logout" title="Log out"><span class="t">Howdy, ' + esc(u.first) + ' (' + u.role + ') · </span>Log out</a></div></div>';
   }
-  function frame(html) { root.innerHTML = bar() + menu() + '<div id="wpbody"><div class="wrap">' + html + '</div></div>'; window.scrollTo(0, 0); }
+  function frame(html) {
+    document.body.classList.remove('menu-open');
+    root.innerHTML = bar() + menu() + '<div class="menu-scrim" data-a="menu-toggle"></div><div id="wpbody"><div class="wrap">' + html + '</div></div>';
+    labelTables(root); window.scrollTo(0, 0);
+  }
+  /* Copy column headings onto cells so list tables stack as cards on phones (as WordPress does) */
+  function labelTables(el) {
+    el.querySelectorAll('table.wp-list-table').forEach(function (tb) {
+      var heads = Array.prototype.map.call(tb.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); });
+      tb.querySelectorAll('tbody tr').forEach(function (tr) { Array.prototype.forEach.call(tr.children, function (td, i) { if (heads[i] && !td.hasAttribute('colspan')) td.setAttribute('data-colname', heads[i]); }); });
+    });
+  }
   function flashHtml() { var f = Store.get('adminFlash'); if (!f) return ''; Store.set('adminFlash', null); return '<div class="notice notice-' + (f.k || 'success') + '"><p>' + f.m + '</p></div>'; }
   function flash(m, k) { Store.set('adminFlash', { m: m, k: k }); }
   function langIcons(type, x) {
@@ -169,7 +180,7 @@
   function syncSource(id) {
     var s = Sync.sources.filter(function (x) { return x.id === id; })[0];
     if (!s) return '<h1>Not found</h1>';
-    return '<h1>' + esc(s.name) + ' <a href="#/sync" class="button page-title-action">← All sources</a></h1><div class="dash" style="grid-template-columns:1fr 1fr"><div><div class="postbox"><h2 class="hndle">Source configuration</h2><div class="inside"><dl class="kv"><dt>Stand-in for</dt><dd>' + esc(s.standIn) + '</dd><dt>Endpoint</dt><dd class="mono">' + esc(s.url) + '</dd><dt>Method</dt><dd>' + s.type + '</dd><dt>Target type</dt><dd>' + TYPES[s.target].label + '</dd><dt>Schedule</dt><dd>' + s.schedule + ' (24 h)</dd><dt>Publishing</dt><dd>Hold for review (auto-publish available)</dd><dt>Duplicate key</dt><dd>External ID → source URL → title + date hash</dd><dt>Update rule</dt><dd>Content hash changed → queued as update for review (never silently overwritten)</dd><dt>On failure</dt><dd>Log error, keep existing content, email admin, retry next run</dd><dt>Courtesy</dt><dd>Identified user-agent, respects robots.txt, rate-limited</dd></dl></div></div>' +
+    return '<h1>' + esc(s.name) + ' <a href="#/sync" class="button page-title-action">← All sources</a></h1><div class="dash dash-two"><div><div class="postbox"><h2 class="hndle">Source configuration</h2><div class="inside"><dl class="kv"><dt>Stand-in for</dt><dd>' + esc(s.standIn) + '</dd><dt>Endpoint</dt><dd class="mono">' + esc(s.url) + '</dd><dt>Method</dt><dd>' + s.type + '</dd><dt>Target type</dt><dd>' + TYPES[s.target].label + '</dd><dt>Schedule</dt><dd>' + s.schedule + ' (24 h)</dd><dt>Publishing</dt><dd>Hold for review (auto-publish available)</dd><dt>Duplicate key</dt><dd>External ID → source URL → title + date hash</dd><dt>Update rule</dt><dd>Content hash changed → queued as update for review (never silently overwritten)</dd><dt>On failure</dt><dd>Log error, keep existing content, email admin, retry next run</dd><dt>Courtesy</dt><dd>Identified user-agent, respects robots.txt, rate-limited</dd></dl></div></div>' +
       (s.selectors ? '<div class="postbox"><h2 class="hndle">CSS selectors (scraper)</h2><div class="inside"><dl class="kv">' + Object.keys(s.selectors).map(function (k) { return '<dt>' + k + '</dt><dd class="mono">' + esc(s.selectors[k]) + '</dd>'; }).join('') + '</dl></div></div>' : '') +
       '<div class="postbox"><h2 class="hndle">Field mapping</h2><div class="inside"><table class="wp-list-table"><thead><tr><th>Source field</th><th>OilSkill field</th></tr></thead><tbody>' + s.map.map(function (m) { return '<tr><td class="mono">' + esc(m[0]) + '</td><td>' + esc(m[1]) + '</td></tr>'; }).join('') + '<tr><td class="mono">(constant)</td><td>Source name + attribution, imported date</td></tr></tbody></table></div></div></div>' +
       '<div><div class="postbox"><h2 class="hndle">Raw response preview <span style="font-weight:400;color:#646970">bundled snapshot</span></h2><div class="inside"><pre class="raw">' + esc(Sync.rawPreview(s)) + '</pre><button class="button button-primary" data-a="run" data-s="' + s.id + '">⟳ Run now</button></div></div><div class="console" id="console"></div></div></div>';
@@ -243,7 +254,7 @@
   }
   function paymentsView() {
     return '<h1>Payment Gateways <span class="pill">MemberPress › Settings › Payments</span></h1><div class="notice notice-warning"><p>Configuration shown for illustration. Live activation requires an approved PayFast (or alternative) merchant account in OilSkill’s name: business registration, bank account and KYC documents.</p></div>' +
-      '<div class="dash" style="grid-template-columns:1fr 1fr"><div class="postbox"><h2 class="hndle">PayFast <span class="pill green">Primary · Sandbox mode</span></h2><div class="inside"><div class="acf-field"><label>Merchant ID</label><input type="text" value="10000100" readonly><div class="desc">PayFast public sandbox merchant</div></div><div class="acf-field"><label>Merchant Key</label><input type="text" value="••••••••••••" readonly></div><div class="acf-field"><label>Passphrase</label><input type="password" value="placeholder" readonly></div><div class="acf-field"><label>Mode</label><select disabled><option>Sandbox (sandbox.payfast.co.za)</option><option>Live</option></select></div><div class="acf-field"><label>ITN (notify) URL</label><input type="text" value="https://oilskill.example/mepr/notify/payfast/itn" readonly style="width:100%"></div><div class="acf-field"><label>Recurring billing</label><input type="checkbox" checked disabled> Subscriptions (token-based)</div><div class="acf-field"><label>Currency</label><input type="text" value="ZAR (per PayFast; to be confirmed)" readonly></div></div></div>' +
+      '<div class="dash dash-two"><div class="postbox"><h2 class="hndle">PayFast <span class="pill green">Primary · Sandbox mode</span></h2><div class="inside"><div class="acf-field"><label>Merchant ID</label><input type="text" value="10000100" readonly><div class="desc">PayFast public sandbox merchant</div></div><div class="acf-field"><label>Merchant Key</label><input type="text" value="••••••••••••" readonly></div><div class="acf-field"><label>Passphrase</label><input type="password" value="placeholder" readonly></div><div class="acf-field"><label>Mode</label><select disabled><option>Sandbox (sandbox.payfast.co.za)</option><option>Live</option></select></div><div class="acf-field"><label>ITN (notify) URL</label><input type="text" value="https://oilskill.example/mepr/notify/payfast/itn" readonly style="width:100%"></div><div class="acf-field"><label>Recurring billing</label><input type="checkbox" checked disabled> Subscriptions (token-based)</div><div class="acf-field"><label>Currency</label><input type="text" value="ZAR (per PayFast; to be confirmed)" readonly></div></div></div>' +
       '<div class="postbox"><h2 class="hndle">Peach Payments <span class="pill">Alternative · not enabled</span></h2><div class="inside"><p>Fallback gateway if PayFast merchant approval is not granted. One gateway is integrated within the SOW scope.</p><p style="color:#646970">Mozambique-local options (M-Pesa, e-Mola) can be assessed as a change request.</p></div></div></div>';
   }
 
@@ -269,7 +280,7 @@
 
   /* ---------------- WPML ---------------- */
   function wpml() {
-    return '<h1>WPML › Languages</h1><div class="dash" style="grid-template-columns:1fr 1fr"><div class="postbox"><h2 class="hndle">Site languages</h2><div class="inside"><table class="wp-list-table"><thead><tr><th>Language</th><th>Code</th><th>Locale</th><th>Default</th></tr></thead><tbody>' + I18N.langs.map(function (l) { return '<tr><td>' + I18N.meta[l].label + '</td><td>' + l + '</td><td>' + I18N.meta[l].locale.replace('-', '_') + '</td><td>' + (l === 'en' ? '✓' : '') + '</td></tr>'; }).join('') + '</tbody></table></div></div>' +
+    return '<h1>WPML › Languages</h1><div class="dash dash-two"><div class="postbox"><h2 class="hndle">Site languages</h2><div class="inside"><table class="wp-list-table"><thead><tr><th>Language</th><th>Code</th><th>Locale</th><th>Default</th></tr></thead><tbody>' + I18N.langs.map(function (l) { return '<tr><td>' + I18N.meta[l].label + '</td><td>' + l + '</td><td>' + I18N.meta[l].locale.replace('-', '_') + '</td><td>' + (l === 'en' ? '✓' : '') + '</td></tr>'; }).join('') + '</tbody></table></div></div>' +
       '<div class="postbox"><h2 class="hndle">Settings</h2><div class="inside"><dl class="kv"><dt>Language URL format</dt><dd>Directory: <code>/pt/</code>, <code>/fr/</code></dd><dt>Switcher</dt><dd>Header (desktop + mobile menu) and footer</dd><dt>Browser language</dt><dd>Suggest, never force redirect</dd><dt>hreflang</dt><dd>Enabled</dd><dt>Translated</dt><dd>Pages, CPTs, taxonomies, ACF fields, menus, widgets, MemberPress & form strings, emails</dd><dt>Translation method</dt><dd>WPML Advanced Translation Editor (machine draft) + human review</dd></dl></div></div></div>';
   }
   function translations() {
@@ -294,7 +305,7 @@
   function mailView() {
     var m = Store.get('mail', []), id = R.q.id, sel = m.filter(function (x) { return x.id === id; })[0] || m[0];
     function render(x) { return { s: I18N.t(x.subjectKey + '.s', x.vars, x.lang), b: I18N.t(x.subjectKey + '.b', x.vars, x.lang) }; }
-    return '<h1>Mail Log <span class="pill">WP Mail Logging</span></h1><div class="notice"><p>Emails are captured instead of sent in the prototype. Each is generated in the recipient’s preferred language.</p></div><div class="dash" style="grid-template-columns:1.2fr 1fr"><table class="wp-list-table"><thead><tr><th>To</th><th>Subject</th><th>Lang</th><th class="hide-sm">Time</th></tr></thead><tbody>' +
+    return '<h1>Mail Log <span class="pill">WP Mail Logging</span></h1><div class="notice"><p>Emails are captured instead of sent in the prototype. Each is generated in the recipient’s preferred language.</p></div><div class="dash dash-mail"><table class="wp-list-table"><thead><tr><th>To</th><th>Subject</th><th>Lang</th><th class="hide-sm">Time</th></tr></thead><tbody>' +
       (m.length ? m.map(function (x) { var r = render(x); return '<tr' + (sel && sel.id === x.id ? ' style="background:#f0f6fc"' : '') + '><td>' + esc(x.to) + '</td><td><a href="#/mail?id=' + x.id + '">' + esc(r.s) + '</a></td><td>' + x.lang.toUpperCase() + '</td><td class="hide-sm">' + fdt(x.date) + '</td></tr>'; }).join('') : '<tr><td colspan="4">No emails yet. Register, pay, cancel or submit a form on the site.</td></tr>') + '</tbody></table>' +
       (sel ? (function () { var r = render(sel); return '<div><div class="mail-prev"><div class="mh">OILSKILL</div><div class="mb"><p style="color:#646970;font-size:12px;margin-top:0">To: ' + esc(sel.to) + '<br>Subject: <b style="color:#1d2327">' + esc(r.s) + '</b></p><p>' + esc(r.b) + '</p><p><a style="background:#E4572E;color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;display:inline-block" href="index.html#/' + sel.lang + '/account" target="_blank">OilSkill →</a></p></div><div class="mf">' + esc(I18N.t('footer.rights', null, sel.lang)) + '</div></div></div>'; })() : '') + '</div>';
   }
@@ -374,7 +385,7 @@
   }
   function heFit() {
     var w = document.getElementById('he-prev'), f = document.getElementById('he-frame'); if (!w || !f) return;
-    if (HE.device === 'mobile') { f.style.width = '390px'; f.style.height = '760px'; f.style.transform = 'none'; w.style.height = '760px'; return; }
+    if (HE.device === 'mobile') { var ms = Math.min(1, (w.clientWidth - 2) / 390); f.style.width = '390px'; f.style.height = Math.round(760 / ms) + 'px'; f.style.transform = ms < 1 ? 'scale(' + ms + ')' : 'none'; w.style.height = '760px'; return; }
     var s = Math.min(1, w.clientWidth / 1366); f.style.width = '1366px'; f.style.height = Math.round(760 / s) + 'px'; f.style.transform = 'scale(' + s + ')'; w.style.height = '760px';
   }
   function heCollect() {
@@ -435,14 +446,18 @@
   }
   window.addEventListener('hashchange', render);
 
+  /* Navigate within the admin: render once (hashchange renders when the hash changes) so flash messages aren't consumed twice */
+  function goTo(h) { if (location.hash === h) render(); else location.hash = h; }
+
   /* ---------------- actions ---------------- */
   function subById(id) { return Store.get('subs', []).filter(function (s) { return s.id === id; })[0]; }
   function mailUser(uid, key, vars) { var u = Store.user(uid); if (u) Store.mail(u.email, key, u.lang || 'en', vars); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-a]'); if (!b || b.tagName === 'SELECT') return;
     var a = b.getAttribute('data-a');
-    if (a === 'logout') { e.preventDefault(); Store.set('adminSession', null); render(); }
-    else if (a === 'trash' || a === 'restore') { e.preventDefault(); var t = b.getAttribute('data-t'); Repo.save(t, { id: b.getAttribute('data-id'), status: a === 'trash' ? 'trash' : 'publish' }); flash(a === 'trash' ? '1 item moved to the Trash.' : '1 item restored.'); location.hash = '#/list/' + t; render(); }
+    if (a === 'menu-toggle') { e.preventDefault(); var open = document.body.classList.toggle('menu-open'); var bt = document.querySelector('#adminbar .burger'); if (bt) bt.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    else if (a === 'logout') { e.preventDefault(); Store.set('adminSession', null); render(); }
+    else if (a === 'trash' || a === 'restore') { e.preventDefault(); var t = b.getAttribute('data-t'); Repo.save(t, { id: b.getAttribute('data-id'), status: a === 'trash' ? 'trash' : 'publish' }); flash(a === 'trash' ? '1 item moved to the Trash.' : '1 item restored.'); goTo('#/list/' + t); }
     else if (a === 'run') { runAnimated([b.getAttribute('data-s')], 'manual'); }
     else if (a === 'run-all') { runAnimated(Sync.sources.map(function (s) { return s.id; }), 'cron (simulated)'); }
     else if (a === 'approve') { var it = Sync.approve(b.getAttribute('data-q'), { translate: !!b.getAttribute('data-tr') }); flash('Approved and published: <b>' + esc(L(it.title)) + '</b>. <a href="' + siteUrl(TYPES[Store.get('queue', []).filter(function (x) { return x.publishedId === it.id; })[0].type].site + '/' + it.id) + '" target="_blank">View on site ↗</a>'); render(); }
@@ -469,7 +484,7 @@
     }
     else if (a === 'savestr') { var k = b.getAttribute('data-k'), ov = Store.get('strings', {}); ['pt', 'fr'].forEach(function (l) { var ta = document.querySelector('textarea[data-k="' + k + '"][data-l="' + l + '"]'); ov[l] = ov[l] || {}; if (ta.value.trim() && ta.value.trim() !== I18N.raw(k, l)) ov[l][k] = ta.value.trim(); else delete ov[l][k]; }); Store.set('strings', ov); toast('String saved: ' + k); }
     else if (a === 'mt') { var f = document.querySelector('form[data-f="edit"]'), l = b.getAttribute('data-lang'), item = Repo.get(f.getAttribute('data-type'), f.getAttribute('data-id')); f.elements.title.value = '[' + l.toUpperCase() + ' MT] ' + L(item.title); f.elements.text.value = '[' + l.toUpperCase() + ' MT] ' + L(item.summary || item.desc); toast('Machine translation draft inserted (simulated). Review, then Update.'); }
-    else if (a === 'reset') { if (confirm('Reset all demo data?')) { Store.reset(); Store.set('adminSession', 'u_admin'); flash('Demo data reset.'); location.hash = '#/dashboard'; render(); } }
+    else if (a === 'reset') { if (confirm('Reset all demo data?')) { Store.reset(); Store.set('adminSession', 'u_admin'); flash('Demo data reset.'); goTo('#/dashboard'); } }
   });
   document.addEventListener('change', function (e) {
     if (e.target.matches('[data-a="feedver"]')) { var st = Store.get('sourceState', {}); st.s3 = e.target.value; Store.set('sourceState', st); toast('Test feed set to ' + e.target.value + '. Click “Run now”.'); render(); }
@@ -479,7 +494,7 @@
     if (k === 'login') {
       var u = Store.userByEmail(f.elements.u.value);
       if (!u || u.password !== f.elements.p.value || (u.role !== 'administrator' && u.role !== 'editor')) { loginView(true); return; }
-      Store.set('adminSession', u.id); location.hash = '#/dashboard'; render();
+      Store.set('adminSession', u.id); goTo('#/dashboard');
     }
     else if (k === 'listfilter') { location.hash = '#/list/' + f.getAttribute('data-type') + '?s=' + encodeURIComponent(f.elements.s.value) + '&sector=' + f.elements.sector.value + (R.q.status ? '&status=' + R.q.status : ''); }
     else if (k === 'regfilter') { location.hash = '#/regs?w=' + f.elements.w.value; }
@@ -512,7 +527,7 @@
       }
       Repo.save(type, upd);
       flash((isNew ? 'Item published.' : 'Item updated (' + I18N.meta[lang].label + ').') + ' <a href="' + siteUrl(TYPES[type].site + '/' + id).replace('#/en/', '#/' + lang + '/') + '" target="_blank">View on site ↗</a>');
-      location.hash = '#/edit/' + type + '/' + id + '?lang=' + lang; render();
+      goTo('#/edit/' + type + '/' + id + '?lang=' + lang);
     }
   });
 

@@ -127,7 +127,14 @@ pre.raw { background: #f6f7f7; border: 1px solid var(--wp-line2); padding: 10px;
 .login .err { width: 320px; border-left: 4px solid var(--wp-red); background: #fff; padding: 10px 12px; margin-top: 20px; box-shadow: 0 1px 1px rgba(0,0,0,.04); }
 .toast { position: fixed; bottom: 20px; right: 20px; background: #1d2327; color: #fff; padding: 10px 16px; border-radius: 4px; z-index: 400; box-shadow: 0 3px 10px rgba(0,0,0,.3); }
 .hide-sm { }
+#adminbar .burger, #adminbar .m, .menu-scrim { display: none; }
+.dash-two { grid-template-columns: 1fr 1fr; }
+.dash-mail { grid-template-columns: 1.2fr 1fr; }
+.wp-list-table td, .kv dd { overflow-wrap: anywhere; }
+.tablenav select, .tablenav input[type=search] { max-width: 100%; }
 @media (max-width: 960px) {
+  .dash-two, .dash-mail { grid-template-columns: 1fr; }
+  .dash > * { min-width: 0; }
   #menu { width: 46px; }
   #menu a span.lbl, #menu .sub, #menu .cnt { display: none; }
   #menu a { justify-content: center; padding: 10px 0; }
@@ -164,3 +171,61 @@ pre.raw { background: #f6f7f7; border: 1px solid var(--wp-line2); padding: 10px;
 .he-prev.mobile { display: flex; justify-content: center; }
 .he-prev.mobile iframe { box-shadow: 0 4px 18px rgba(0,0,0,.18); }
 @media (max-width: 960px) { .he-side { position: static; } }
+
+/* ---------- Phones (≤782px, WordPress' own mobile breakpoint) ---------- */
+@media (max-width: 782px) {
+  #adminbar { height: 46px; font-size: 14px; }
+  #adminbar a { height: 46px; padding: 0 9px; font-size: 16px; }
+  #adminbar .burger { display: inline-flex; font-size: 22px; }
+  #adminbar .t, #adminbar .wp { display: none; }
+  #adminbar .m { display: inline; }
+  #adminbar .demo { margin: 0 4px; font-size: 10px; padding: 2px 6px; }
+  #adminbar .right a { font-size: 13px; }
+  #menu { top: 46px; width: 250px; transform: translateX(-100%); transition: transform .2s ease; box-shadow: 2px 0 12px rgba(0,0,0,.35); }
+  body.menu-open #menu { transform: none; }
+  body.menu-open .menu-scrim { display: block; position: fixed; inset: 46px 0 0 0; background: rgba(0,0,0,.45); z-index: 80; }
+  #menu a span.lbl { display: inline; }
+  #menu a { justify-content: flex-start; padding: 11px 14px; font-size: 15px; }
+  #menu .sub { display: block; }
+  #menu .sub a { padding: 9px 14px 9px 44px; }
+  #menu .cnt { display: inline; }
+  #wpbody { margin-left: 0; padding: 56px 12px 40px; }
+  h1 { font-size: 21px; }
+  .button { min-height: 38px; line-height: 2.6; font-size: 14px; }
+  .button-small { min-height: 32px; line-height: 2.3; font-size: 12px; }
+  input[type=text], input[type=email], input[type=password], input[type=search], input[type=number], input[type=date], input[type=url], input[type=datetime-local], select, textarea { font-size: 16px; min-height: 40px; }
+  .tablenav { flex-direction: column; align-items: stretch; }
+  .tablenav .acts { width: 100%; }
+  .tablenav .acts select, .tablenav .acts input[type=search] { flex: 1; min-width: 0; }
+  .subsubsub { font-size: 13px; }
+  /* list tables stack like WordPress on mobile */
+  table.wp-list-table { display: block; border: 0; background: transparent; box-shadow: none; overflow: visible; }
+  .wp-list-table thead { display: none; }
+  .wp-list-table tbody { display: block; }
+  .wp-list-table tbody tr { display: block; background: #fff !important; border: 1px solid var(--wp-line); margin-bottom: 10px; padding: 4px 0; }
+  .wp-list-table td { display: block; border: 0; padding: 6px 12px; }
+  .wp-list-table td[data-colname]::before { content: attr(data-colname); display: block; font-size: 11px; color: var(--wp-muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+  .wp-list-table td.check-col, .wp-list-table td:first-child:has(> input[type=checkbox]:only-child) { display: none; }
+  .wp-list-table .hide-sm { display: none; }
+  .row-actions { visibility: visible; font-size: 13px; padding-top: 6px; }
+  .postbox .inside .wp-list-table tbody tr { margin-bottom: 6px; }
+  .kv { grid-template-columns: 110px 1fr; }
+  .diff { grid-template-columns: 1fr; }
+  .edit-layout { gap: 0; }
+  #title { font-size: 1.3em; }
+  .lang-tabs a { padding: 8px 10px; font-size: 13px; }
+  .he-tabs { top: 46px; overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
+  .he-row { padding: 8px 0; }
+  .he-card .acf-row { gap: 0; }
+  .postbox h2.hndle { flex-wrap: wrap; gap: 6px; }
+  .he-prev-tools .button-small { min-height: 30px; }
+  .console { max-height: 280px; font-size: 11px; }
+  .modal { padding: 16px; }
+  .modal .acts { flex-wrap: wrap; }
+  .modal .acts .button { flex: 1; justify-content: center; }
+  .mail-prev { max-width: 100%; }
+  .notice { padding: 6px 10px; }
+  .toast { left: 12px; right: 12px; bottom: 12px; text-align: center; }
+  .login { padding-top: 4vh; }
+  .login form, .login .hint, .login .err { width: calc(100vw - 32px); max-width: 340px; }
+}

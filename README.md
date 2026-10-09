@@ -272,7 +272,7 @@ Don't try to change these during the presentation. If the client asks, explain t
 | Payment journey | Checkout → simulated gateway → choose **declined** (failed page, nothing activated) → retry → **approved** → membership active |
 | Cancellation | My Account → My subscription & billing → Cancel → access kept until period end |
 | Webinar registration | Webinars → upcoming webinar → Register (then show Backend → Webinars → Registrations → Export CSV) |
-| Mobile | Browser dev tools (F12 → device toolbar) or a phone |
+| Mobile | Open the link on a phone, or browser dev tools (F12 → device toolbar). Every website page and every backend screen is responsive (tested at 360, 375, 390 and 768 px wide). On a phone the backend menu opens from the **☰** button at top left, and list tables show as cards (like WordPress on mobile). |
 
 ---
 

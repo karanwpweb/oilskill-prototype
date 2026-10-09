@@ -418,7 +418,7 @@
       sel('plan', 'f.plan', D.PLANS.map(function (x) { return [x.id, planName(x.id) + (x.price ? ' · ' + I18N.money(x.price, state.lang) : '')]; }), p || 'free', true) +
       '<div class="full"><div class="field" data-f="terms"><label class="check"><input type="checkbox" name="terms"> <span>' + t('f.terms').replace(t('terms.title'), '<a href="' + href('terms') + '" target="_blank">' + t('terms.title') + '</a>').replace(t('privacy.title'), '<a href="' + href('privacy') + '" target="_blank">' + t('privacy.title') + '</a>') + ' <span class="req">*</span></span></label><div class="field-err" role="alert"></div></div>' +
       '<label class="check" style="margin-bottom:18px"><input type="checkbox" name="marketing"> <span>' + t('f.marketing') + '</span></label>' +
-      '<input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-5000px" aria-hidden="true">' +
+      '<input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">' +
       '<button class="btn btn-primary btn-block" id="reg-submit">' + t(paid ? 'reg.submitPay' : 'reg.submit') + '</button><p class="divider">' + t('f.haveAccount') + ' <a href="' + href('login') + '">' + t('nav.login') + '</a></p></div></div></form></div></section>';
   }
   function login() {
@@ -467,7 +467,7 @@
   function gateway(pid) {
     var u = me(), p = plan(pid); if (!u || !p) return notFound();
     document.body.classList.add('gw-mode');
-    return '<div class="gw"><div class="gw-top"><span class="gw-logo">🔒 Secure payment gateway</span><span class="gw-sbx">SANDBOX · SIMULATED</span><span style="margin-left:auto;font-size:.8rem;color:#666">Prototype stand-in for the hosted gateway checkout (proposed: PayFast; English only)</span></div>' +
+    return '<div class="gw"><div class="gw-top"><span class="gw-logo">🔒 Secure payment gateway</span><span class="gw-sbx">SANDBOX · SIMULATED</span><span class="gw-note">Prototype stand-in for the hosted gateway checkout (proposed: PayFast; English only)</span></div>' +
       '<div class="gw-card"><h2>Payment to OilSkill Co.</h2><div class="gw-row"><span>Item</span><b>' + esc(L(p.name, 'en')) + ' membership (' + p.cycle + 'ly)</b></div><div class="gw-row"><span>Amount</span><b>ZAR ' + p.price.toFixed(2) + '</b></div><div class="gw-row"><span>Subscription</span><b>Recurring, every ' + p.cycle + '</b></div><div class="gw-row"><span>Buyer</span><b>' + esc(u.email) + '</b></div>' +
       '<form data-form="gateway" data-plan="' + pid + '" style="margin-top:16px"><p style="font-size:.88rem;color:#555;margin-bottom:8px">Choose a sandbox test outcome:</p>' +
       '<label class="gw-opt"><input type="radio" name="o" value="success" checked> <span><b>Test card: approved</b><br><span style="color:#666;font-size:.82rem">Visa •••• 4242: payment completes, ITN “COMPLETE” sent to site</span></span></label>' +
@@ -542,7 +542,7 @@
   }
   function contact() {
     var u = me();
-    return pageHead('contact.title', 'contact.intro', [[t('nav.contact')]]) + '<section class="section"><div class="wrap grid g2" style="grid-template-columns:1.4fr 1fr;align-items:start"><form class="auth wide" style="margin:0;max-width:none" data-form="contact" novalidate><div class="form-notice"></div><div id="contact-out"></div><div class="form-grid">' +
+    return pageHead('contact.title', 'contact.intro', [[t('nav.contact')]]) + '<section class="section"><div class="wrap grid contact-grid"><form class="auth wide" style="margin:0;max-width:none" data-form="contact" novalidate><div class="form-notice"></div><div id="contact-out"></div><div class="form-grid">' +
       fld('name', 'f.name', 'text', u ? u.first + ' ' + u.last : '', true) + fld('email', 'f.email', 'email', u ? u.email : '', true) + fld('org', 'f.org', 'text', u ? u.org : '', false) + fld('phone', 'f.phone', 'tel', '', false) +
       '<div class="full">' + sel('subject', 'f.subject', [['membership', t('contact.subj.membership')], ['listing', t('contact.subj.listing')], ['partnership', t('contact.subj.partnership')], ['other', t('contact.subj.other')]], '', true) +
       '<div class="field" data-f="message"><label for="i-message">' + t('f.message') + ' <span class="req">*</span></label><textarea id="i-message" name="message" rows="5" required></textarea><div class="field-err" role="alert"></div></div>' +
@@ -580,6 +580,15 @@
       '<div class="panel"><h2>5. From prototype to production</h2><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Prototype element</th><th>Production implementation (SOW)</th></tr></thead><tbody>' +
       [['Hash routes and templates', 'WordPress theme templates per CPT (Milestones 1–2)'], ['data.js records + taxonomies', 'Custom post types + ACF Pro fields + taxonomies'], ['Language dictionaries', 'WPML (content, menus, taxonomies, ACF, String Translation, emails)'], ['Membership logic & gating', 'MemberPress levels, rules and member pages'], ['Simulated PayFast page', 'PayFast (or approved alternative) with recurring billing + ITN validation'], ['Browser sync engine', 'Custom WordPress plugin: server-side fetch, WP-Cron + server cron, same mapping/dedupe/review logic'], ['Admin mock (admin.html)', 'Native WordPress admin with the plugins above'], ['Illustrated image slots', 'Licensed photography from OilSkill and project operators, WebP/AVIF, credited']].map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') + '</tbody></table></div></div>' +
       '<div class="panel"><h2>6. Reset</h2><p class="muted">Restore all sample data, accounts and settings.</p><button class="btn btn-dark" data-act="reset">Reset demo data</button></div></div></section>';
+  }
+
+  /* Copy column headings onto each cell so tables can stack as cards on phones */
+  function labelTables(root) {
+    root.querySelectorAll('table.tbl').forEach(function (tb) {
+      var heads = Array.prototype.map.call(tb.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); });
+      tb.querySelectorAll('tbody tr').forEach(function (tr) { Array.prototype.forEach.call(tr.children, function (td, i) { if (heads[i]) td.setAttribute('data-label', heads[i]); }); });
+      tb.classList.add('stack');
+    });
   }
 
   /* ---------------- router ---------------- */
@@ -626,6 +635,7 @@
     else html = notFound();
     if (html === '') return;
     app.innerHTML = header() + '<main id="main">' + html + '</main>' + footer();
+    labelTables(app);
     var h1 = app.querySelector('h1');
     document.title = (h1 && r !== 'home' ? h1.textContent + ' | ' : '') + 'OilSkill · ' + t('site.tagline');
     if (!opts.keepScroll) window.scrollTo(0, 0);
